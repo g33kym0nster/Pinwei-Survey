@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pin Wei — Thảo Điền Launch</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:ital,wght@0,400;0,500;1,400&family=Be+Vietnam+Pro:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0A0A0A;
+    --white: #F5F5F0;
+    --yellow: #FFD600;
+    --grey: #1C1C1C;
+    --mid: #444;
+    --light: #888;
+    --red: #ff5555;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--black); color: var(--white);
+    font-family: 'Be Vietnam Pro', 'Barlow', sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── LANG TOGGLE ── */
+  .lang-bar {
+    position: fixed; top: 0; right: 0; z-index: 100;
+    display: flex; gap: 0;
+  }
+  .lang-btn {
+    background: var(--grey); border: none; color: var(--light);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+    font-weight: 700; letter-spacing: 1px; padding: 10px 16px;
+    cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .lang-btn.active { background: var(--yellow); color: var(--black); }
+
+  /* ── SCREEN 0: HOOK ── */
+  #s0 {
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px 24px 40px;
+    position: relative; overflow: hidden;
+  }
+  #s0::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 39px,
+      rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+  }
+  .brand-mark {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+    font-weight: 700; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--yellow); margin-bottom: 28px; position: relative; z-index: 1;
+    opacity: 0; animation: fadeUp 0.5s 0.1s forwards;
+  }
+  .hook-headline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(60px, 15vw, 112px); font-weight: 900;
+    line-height: 0.88; text-transform: uppercase; letter-spacing: -2px;
+    position: relative; z-index: 1;
+    opacity: 0; animation: fadeUp 0.5s 0.3s forwards;
+  }
+  .hook-headline em { font-style: normal; color: var(--yellow); display: block; }
+  .hook-sub {
+    font-size: 16px; color: var(--light); margin-top: 24px;
+    line-height: 1.7; position: relative; z-index: 1;
+    opacity: 0; animation: fadeUp 0.5s 0.5s forwards;
+  }
+  .hook-sub .vi { font-style: italic; }
+  .hook-cta { margin-top: 44px; position: relative; z-index: 1; opacity: 0; animation: fadeUp 0.5s 0.7s forwards; }
+  .btn-primary {
+    background: var(--yellow); color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 22px;
+    font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    border: none; padding: 18px 48px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s; display: inline-block;
+  }
+  .btn-primary:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--white); }
+  .fine-print { margin-top: 14px; font-size: 12px; color: var(--mid); }
+
+  /* ── FORM SCREENS ── */
+  .form-screen {
+    padding: 64px 24px 40px; max-width: 540px;
+    margin: 0 auto; width: 100%;
+  }
+  .step-bar { display: flex; gap: 6px; margin-bottom: 44px; }
+  .step-dot { height: 3px; flex: 1; background: var(--grey); transition: background 0.3s; }
+  .step-dot.done { background: var(--yellow); }
+  .step-dot.active { background: var(--white); }
+
+  .q-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--yellow); margin-bottom: 10px;
+  }
+  .q-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(34px, 9vw, 54px); font-weight: 900;
+    text-transform: uppercase; line-height: 0.95; margin-bottom: 6px;
+  }
+  .q-vi { font-size: 14px; color: var(--light); font-style: italic; margin-bottom: 32px; line-height: 1.5; }
+
+  /* Inputs */
+  .field-input {
+    width: 100%; background: var(--grey); border: 2px solid transparent;
+    color: var(--white); font-family: 'Be Vietnam Pro', sans-serif; font-size: 18px;
+    padding: 16px 18px; outline: none; transition: border-color 0.2s;
+    border-radius: 0; -webkit-appearance: none; margin-bottom: 28px;
+    display: block;
+  }
+  .field-input::placeholder { color: var(--mid); }
+  .field-input:focus { border-color: var(--yellow); }
+  .phone-row { display: flex; gap: 10px; margin-bottom: 28px; }
+  .country-code {
+    background: var(--grey); border: 2px solid transparent;
+    color: var(--white); font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px;
+    padding: 16px 10px; width: 105px; outline: none; flex-shrink: 0;
+    border-radius: 0; -webkit-appearance: none; cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .country-code:focus { border-color: var(--yellow); }
+  .phone-input { flex: 1; margin-bottom: 0 !important; }
+
+  /* Zalo note */
+  .zalo-note {
+    background: var(--grey); border-left: 3px solid var(--yellow);
+    padding: 14px 16px; margin-bottom: 28px; font-size: 13px;
+    color: #aaa; line-height: 1.6;
+  }
+  .zalo-note strong { color: var(--white); }
+
+  /* Drink tiles */
+  .drink-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+  .drink-tile {
+    background: var(--grey); border: 2px solid transparent;
+    padding: 16px 14px; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    position: relative;
+  }
+  .drink-tile:hover { border-color: var(--mid); transform: translate(-1px,-1px); }
+  .drink-tile.selected { border-color: var(--yellow); background: #1f1c00; }
+  .drink-tile.selected::after {
+    content: '✓'; position: absolute; top: 8px; right: 10px;
+    font-size: 13px; color: var(--yellow); font-weight: 700;
+  }
+  .tile-emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+  .tile-en {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 15px;
+    font-weight: 800; text-transform: uppercase; color: var(--white);
+    line-height: 1.2; margin-bottom: 3px;
+  }
+  .tile-vi { font-size: 11px; color: var(--light); line-height: 1.3; }
+
+  /* Consent */
+  .consent-box {
+    background: var(--grey); padding: 16px 18px;
+    margin-bottom: 28px; display: flex; gap: 12px; align-items: flex-start;
+    cursor: pointer;
+  }
+  .consent-box input[type="checkbox"] {
+    width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--yellow);
+    cursor: pointer; margin-top: 2px;
+  }
+  .consent-text { font-size: 13px; color: #aaa; line-height: 1.6; }
+  .consent-text strong { color: var(--white); }
+  .consent-text a { color: var(--yellow); text-decoration: none; }
+
+  /* Error */
+  .error-msg { color: var(--red); font-size: 13px; margin-bottom: 14px; display: none; }
+  .error-msg.show { display: block; }
+
+  /* Buttons */
+  .btn-next {
+    width: 100%; background: var(--yellow); color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 22px;
+    font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    border: none; padding: 20px; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-next:hover { background: #ffe033; }
+  .btn-sub { font-size: 12px; color: var(--mid); text-align: center; margin-top: 10px; }
+
+  /* Share screen */
+  .share-card {
+    background: var(--grey); padding: 20px; margin-bottom: 20px;
+    border-left: 4px solid var(--yellow);
+  }
+  .share-card p { font-size: 14px; line-height: 1.7; color: #bbb; }
+  .share-card strong { color: var(--white); }
+  .share-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .btn-share {
+    background: transparent; border: 2px solid var(--mid);
+    color: var(--white); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px;
+    transition: border-color 0.2s, color 0.2s; text-decoration: none; width: 100%;
+  }
+  .btn-share:hover { border-color: var(--yellow); color: var(--yellow); }
+  .btn-skip {
+    width: 100%; background: transparent; border: 2px solid var(--mid);
+    color: var(--mid); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; font-weight: 700; text-transform: uppercase;
+    padding: 16px; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-skip:hover { border-color: var(--light); color: var(--light); }
+
+  /* Done */
+  #s-done {
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px 24px 40px; position: relative; overflow: hidden;
+  }
+  .confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .confetti-piece { position: absolute; top: -20px; animation: confettiFall linear infinite; }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  .done-inner { position: relative; z-index: 1; }
+  .done-tag {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    font-weight: 700; letter-spacing: 4px; color: var(--yellow);
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .done-headline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(52px, 13vw, 90px); font-weight: 900;
+    text-transform: uppercase; line-height: 0.88; letter-spacing: -2px;
+  }
+  .done-headline em { font-style: normal; color: var(--yellow); display: block; }
+  .done-vi { font-size: 15px; color: var(--light); font-style: italic; margin-top: 12px; }
+
+  .zalo-badge {
+    margin: 32px auto; max-width: 360px;
+    background: var(--grey); padding: 28px 24px;
+    border: 2px solid #0068FF; position: relative;
+  }
+  .zalo-logo {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900;
+    color: #0068FF; letter-spacing: 2px; margin-bottom: 12px;
+  }
+  .zalo-badge p { font-size: 14px; color: #bbb; line-height: 1.7; }
+  .zalo-badge strong { color: var(--white); }
+  .zalo-phone { font-size: 22px; font-weight: 700; color: var(--yellow); margin-top: 10px; }
+
+  .done-sub { font-size: 14px; color: var(--light); max-width: 320px; margin: 0 auto; line-height: 1.7; }
+  .done-sub em { font-style: italic; color: #888; display: block; margin-top: 6px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANG TOGGLE -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+  <button class="lang-btn" onclick="setLang('vi')" id="btn-vi">VI</button>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 0: HOOK
+══════════════════════════════════ -->
+<section class="screen active" id="s0">
+  <div>
+    <div class="brand-mark">☯ Pin Wei — Thảo Điền</div>
+    <h1 class="hook-headline">
+      You're<br><em>Early.</em>
+    </h1>
+    <p class="hook-sub">
+      <span class="en-t">We're building something dangerously smooth.<br>Claim your free drink before the crowd arrives.</span>
+      <br><span class="vi-t vi" style="font-size:14px; margin-top:6px; display:block;">Chúng tôi đang tạo ra điều gì đó nguy hiểm êm dịu.<br>Nhận đồ uống miễn phí trước khi cửa hàng mở cửa.</span>
+    </p>
+    <div class="hook-cta">
+      <button class="btn-primary" onclick="goTo('s1')">
+        <span class="en-t">GET MY FREE DRINK →</span>
+        <span class="vi-t" style="display:none;">NHẬN ĐỒ UỐNG MIỄN PHÍ →</span>
+      </button>
+      <p class="fine-print">
+        <span class="en-t">30 seconds · No spam · Ever.</span>
+        <span class="vi-t" style="display:none;">30 giây · Không spam · Bao giờ.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SCREEN 1: NAME
+══════════════════════════════════ -->
+<section class="screen" id="s1">
+  <div class="form-screen">
+    <div class="step-bar">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="q-eyebrow">
+      <span class="en-t">Step 01 of 03</span>
+      <span class="vi-t" style="display:none;">Bước 01 / 03</span>
+    </div>
+    <h2 class="q-title">
+      <span class="en-t">What do<br>we call you?</span>
+      <span class="vi-t" style="display:none;">Tên bạn<br>là gì?</span>
+    </h2>
+    <p class="q-vi">
+      <span class="en-t">First name is fine. We're not formal here.</span>
+      <span class="vi-t" style="display:none;">Chỉ cần tên thôi. Chúng tôi không câu nệ.</span>
+    </p>
+    <input class="field-input" id="input-name" type="text" autocomplete="given-name"
+      placeholder="Your name / Tên của bạn" />
+    <p class="error-msg" id="err-name">
+      <span class="en-t">Don't be shy — drop your name 👀</span>
+      <span class="vi-t" style="display:none;">Đừng ngại — nhập tên của bạn 👀</span>
+    </p>
+    <button class="btn-next" onclick="validateName()">
+      <span class="en-t">NEXT →</span>
+      <span class="vi-t" style="display:none;">TIẾP THEO →</span>
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SCREEN 2: PHONE / ZALO
+══════════════════════════════════ -->
+<section class="screen" id="s2">
+  <div class="form-screen">
+    <div class="step-bar">
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="q-eyebrow">
+      <span class="en-t">Step 02 of 03</span>
+      <span class="vi-t" style="display:none;">Bước 02 / 03</span>
+    </div>
+    <h2 class="q-title">
+      <span class="en-t">Your Zalo<br>number?</span>
+      <span class="vi-t" style="display:none;">Số Zalo<br>của bạn?</span>
+    </h2>
+    <p class="q-vi">
+      <span class="en-t">We'll send your voucher via Zalo before launch day.</span>
+      <span class="vi-t" style="display:none;">Chúng tôi sẽ gửi voucher của bạn qua Zalo trước ngày khai trương.</span>
+    </p>
+    <div class="zalo-note">
+      <strong>🔵 Zalo Message</strong><br>
+      <span class="en-t">Your free drink voucher will be sent via Zalo message before we open. Make sure this number has Zalo!</span>
+      <span class="vi-t" style="display:none;">Voucher đồ uống miễn phí của bạn sẽ được gửi qua tin nhắn Zalo trước khi chúng tôi khai trương. Hãy chắc số này có Zalo nhé!</span>
+    </div>
+    <div class="phone-row">
+      <select class="country-code" id="country-code">
+        <option value="+84">🇻🇳 +84</option>
+        <option value="+65">🇸🇬 +65</option>
+        <option value="+1">🇺🇸 +1</option>
+        <option value="+44">🇬🇧 +44</option>
+        <option value="+61">🇦🇺 +61</option>
+        <option value="+66">🇹🇭 +66</option>
+        <option value="+60">🇲🇾 +60</option>
+      </select>
+      <input class="field-input phone-input" id="input-phone" type="tel"
+        placeholder="Phone / Số điện thoại" inputmode="numeric" />
+    </div>
+    <p class="error-msg" id="err-phone">
+      <span class="en-t">Double check your number — must be at least 8 digits.</span>
+      <span class="vi-t" style="display:none;">Kiểm tra lại số của bạn — phải có ít nhất 8 chữ số.</span>
+    </p>
+    <button class="btn-next" onclick="validatePhone()">
+      <span class="en-t">NEXT →</span>
+      <span class="vi-t" style="display:none;">TIẾP THEO →</span>
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SCREEN 3: DRINK SURVEY
+══════════════════════════════════ -->
+<section class="screen" id="s3">
+  <div class="form-screen">
+    <div class="step-bar">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="q-eyebrow">
+      <span class="en-t">Step 03 of 03</span>
+      <span class="vi-t" style="display:none;">Bước 03 / 03</span>
+    </div>
+    <h2 class="q-title">
+      <span class="en-t">Your go-to<br>daily drink?</span>
+      <span class="vi-t" style="display:none;">Đồ uống<br>hàng ngày?</span>
+    </h2>
+    <p class="q-vi">
+      <span class="en-t">Pick the one you'd reach for every day. One choice only.</span>
+      <span class="vi-t" style="display:none;">Chọn loại bạn uống mỗi ngày. Chỉ chọn một thôi nhé.</span>
+    </p>
+    <div class="drink-grid">
+      <div class="drink-tile" data-val="chrysanthemum" onclick="selectDrink(this)">
+        <span class="tile-emoji">🌼</span>
+        <div class="tile-en">Chrysanthemum<br>Blossom Tea</div>
+        <div class="tile-vi">Trà Hoa Cúc Thanh Mát</div>
+      </div>
+      <div class="drink-tile" data-val="monkfruit" onclick="selectDrink(this)">
+        <span class="tile-emoji">🍈</span>
+        <div class="tile-en">Monk Fruit<br>Herbal Infusion</div>
+        <div class="tile-vi">Trà La Hán Quả Tự Nhiên</div>
+      </div>
+      <div class="drink-tile" data-val="cf_milk" onclick="selectDrink(this)">
+        <span class="tile-emoji">🥛</span>
+        <div class="tile-en">Vietnamese Iced<br>Milk Coffee</div>
+        <div class="tile-vi">Cà Phê Sữa Đá</div>
+      </div>
+      <div class="drink-tile" data-val="cf_black" onclick="selectDrink(this)">
+        <span class="tile-emoji">☕</span>
+        <div class="tile-en">Vietnamese Iced<br>Black Coffee</div>
+        <div class="tile-vi">Cà Phê Đen Đá</div>
+      </div>
+      <div class="drink-tile" data-val="sg_black" onclick="selectDrink(this)">
+        <span class="tile-emoji">🧊</span>
+        <div class="tile-en">Singaporean<br>Iced Black Tea</div>
+        <div class="tile-vi">Trà Đen Đá</div>
+      </div>
+      <div class="drink-tile" data-val="sg_milk" onclick="selectDrink(this)">
+        <span class="tile-emoji">🍵</span>
+        <div class="tile-en">Singaporean<br>Iced Milk Tea</div>
+        <div class="tile-vi">Trà Sữa Đá</div>
+      </div>
+    </div>
+    <p class="error-msg" id="err-drink">
+      <span class="en-t">Pick your favourite first 👇</span>
+      <span class="vi-t" style="display:none;">Hãy chọn đồ uống yêu thích trước 👇</span>
+    </p>
+
+    <!-- CONSENT -->
+    <label class="consent-box" id="consent-label">
+      <input type="checkbox" id="consent-check" onchange="toggleConsent()" />
+      <span class="consent-text">
+        <span class="en-t">By submitting, I agree to join <strong>Pin Wei membership</strong> and consent to receiving my free drink voucher and updates via Zalo. <a href="#">Privacy Policy</a>.</span>
+        <span class="vi-t" style="display:none;">Khi gửi thông tin, tôi đồng ý tham gia <strong>thành viên Pin Wei</strong> và đồng ý nhận voucher đồ uống miễn phí và tin tức qua Zalo. <a href="#">Chính sách bảo mật</a>.</span>
+      </span>
+    </label>
+    <p class="error-msg" id="err-consent">
+      <span class="en-t">Please agree to join Pin Wei membership to receive your voucher.</span>
+      <span class="vi-t" style="display:none;">Vui lòng đồng ý tham gia thành viên Pin Wei để nhận voucher.</span>
+    </p>
+
+    <button class="btn-next" onclick="validateDrink()">
+      <span class="en-t">CLAIM MY FREE DRINK →</span>
+      <span class="vi-t" style="display:none;">NHẬN ĐỒ UỐNG MIỄN PHÍ →</span>
+    </button>
+    <p class="btn-sub">
+      <span class="en-t">Your voucher will arrive via Zalo before launch day.</span>
+      <span class="vi-t" style="display:none;">Voucher của bạn sẽ đến qua Zalo trước ngày khai trương.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SCREEN 4: SHARE (VIRAL)
+══════════════════════════════════ -->
+<section class="screen" id="s4">
+  <div class="form-screen">
+    <div class="step-bar">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+    </div>
+    <div class="q-eyebrow">
+      <span class="en-t">🔥 Bonus Move</span>
+      <span class="vi-t" style="display:none;">🔥 Điểm Cộng</span>
+    </div>
+    <h2 class="q-title" style="font-size:clamp(32px,8vw,50px); margin-bottom:8px;">
+      <span class="en-t">Give a friend<br><span style="color:var(--yellow)">a free drink</span><br>too.</span>
+      <span class="vi-t" style="display:none;">Tặng bạn bè<br><span style="color:var(--yellow)">đồ uống miễn phí</span><br>luôn nhé.</span>
+    </h2>
+    <p class="q-vi" style="margin-bottom:20px;">
+      <span class="en-t">Send them this link. They fill in 30 seconds, they're in. You look like a hero.</span>
+      <span class="vi-t" style="display:none;">Gửi link này cho họ. Điền 30 giây là xong. Bạn trông ngầu lắm đó.</span>
+    </p>
+    <div class="share-card">
+      <p>
+        <span class="en-t">Your friend scans the QR on the hoarding, fills the form, and gets their own free drink on launch day.<br><strong>They owe you one. 🤝</strong></span>
+        <span class="vi-t" style="display:none;">Bạn bè quét mã QR trên tấm hoarding, điền form và nhận đồ uống miễn phí ngày khai trương.<br><strong>Họ nợ bạn một cái. 🤝</strong></span>
+      </p>
+    </div>
+    <div class="share-buttons">
+      <a class="btn-share" href="#" onclick="shareZalo(event)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="12" fill="#0068FF"/><text x="12" y="16" text-anchor="middle" fill="white" font-weight="bold" font-size="9" font-family="Arial">ZALO</text></svg>
+        <span class="en-t">Share via Zalo</span>
+        <span class="vi-t" style="display:none;">Chia sẻ qua Zalo</span>
+      </a>
+      <a class="btn-share" href="#" onclick="shareWhatsApp(event)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span class="en-t">Share via WhatsApp</span>
+        <span class="vi-t" style="display:none;">Chia sẻ qua WhatsApp</span>
+      </a>
+      <button class="btn-share" onclick="copyLink()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copy-label">
+          <span class="en-t">Copy link</span>
+          <span class="vi-t" style="display:none;">Sao chép link</span>
+        </span>
+      </button>
+    </div>
+    <button class="btn-skip" onclick="goTo('s-done')">
+      <span class="en-t">SKIP — SHOW CONFIRMATION</span>
+      <span class="vi-t" style="display:none;">BỎ QUA — XEM XÁC NHẬN</span>
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SCREEN DONE
+══════════════════════════════════ -->
+<section class="screen" id="s-done">
+  <div class="confetti-wrap" id="confetti"></div>
+  <div class="done-inner" style="text-align:center; max-width:480px; margin:0 auto; padding: 20px;">
+    <div class="done-tag">
+      <span class="en-t">✅ You're in</span>
+      <span class="vi-t" style="display:none;">✅ Bạn đã đăng ký</span>
+    </div>
+    <h1 class="done-headline">
+      <span class="en-t">See you<br><em>launch<br>day.</em></span>
+      <span class="vi-t" style="display:none;">Hẹn gặp<br><em>ngày<br>khai trương.</em></span>
+    </h1>
+    <p class="done-vi">
+      <span class="en-t">Something dangerously smooth is coming to Thảo Điền. 🖤</span>
+      <span class="vi-t" style="display:none;">Điều gì đó nguy hiểm êm dịu đang đến Thảo Điền. 🖤</span>
+    </p>
+
+    <div class="zalo-badge">
+      <div class="zalo-logo">ZALO</div>
+      <p>
+        <span class="en-t">
+          <strong>Watch your Zalo.</strong><br>
+          We'll send your free drink voucher to <strong id="done-phone"></strong> via Zalo message before opening day.<br>
+          Make sure your number has Zalo active!
+        </span>
+        <span class="vi-t" style="display:none;">
+          <strong>Hãy để ý Zalo của bạn.</strong><br>
+          Chúng tôi sẽ gửi voucher đồ uống miễn phí của bạn đến <strong id="done-phone-vi"></strong> qua tin nhắn Zalo trước ngày khai trương.<br>
+          Hãy chắc Zalo của bạn đang hoạt động nhé!
+        </span>
+      </p>
+    </div>
+
+    <p class="done-sub">
+      <span class="en-t">
+        Welcome to Pin Wei, <strong id="done-name"></strong>. 
+        You joined as an early member.<br>
+        <em>1 free drink · 1 person · Launch day only</em>
+      </span>
+      <span class="vi-t" style="display:none;">
+        Chào mừng đến Pin Wei, <strong id="done-name-vi"></strong>.
+        Bạn đã tham gia với tư cách thành viên sớm.<br>
+        <em>1 đồ uống miễn phí · 1 người · Chỉ trong ngày khai trương</em>
+      </span>
+    </p>
+  </div>
+</section>
+
+<script>
+  /* ── STATE ── */
+  const app = { name: '', phone: '', countryCode: '+84', drink: '', lang: 'en' };
+
+  /* ── LANG ── */
+  function setLang(l) {
+    app.lang = l;
+    document.querySelectorAll('.en-t').forEach(el => el.style.display = l === 'en' ? '' : 'none');
+    document.querySelectorAll('.vi-t').forEach(el => el.style.display = l === 'vi' ? '' : 'none');
+    document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    document.getElementById('btn-vi').classList.toggle('active', l === 'vi');
+    // Update placeholders
+    document.getElementById('input-name').placeholder = l === 'en' ? 'Your name' : 'Tên của bạn';
+    document.getElementById('input-phone').placeholder = l === 'en' ? 'Phone number' : 'Số điện thoại';
+  }
+
+  /* ── NAVIGATION ── */
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    if (id === 's-done') {
+      launchConfetti();
+      document.getElementById('done-name').textContent = app.name;
+      document.getElementById('done-name-vi').textContent = app.name;
+      document.getElementById('done-phone').textContent = app.phone;
+      document.getElementById('done-phone-vi').textContent = app.phone;
+      submitData();
+    }
+  }
+
+  /* ── VALIDATION ── */
+  function validateName() {
+    const val = document.getElementById('input-name').value.trim();
+    if (!val) { document.getElementById('err-name').classList.add('show'); return; }
+    document.getElementById('err-name').classList.remove('show');
+    app.name = val; goTo('s2');
+  }
+  function validatePhone() {
+    const raw = document.getElementById('input-phone').value.trim().replace(/\D/g,'');
+    if (raw.length < 8) { document.getElementById('err-phone').classList.add('show'); return; }
+    document.getElementById('err-phone').classList.remove('show');
+    app.countryCode = document.getElementById('country-code').value;
+    app.phone = app.countryCode + raw;
+    goTo('s3');
+  }
+  function selectDrink(el) {
+    document.querySelectorAll('.drink-tile').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    app.drink = el.dataset.val;
+    document.getElementById('err-drink').classList.remove('show');
+  }
+  function toggleConsent() {
+    document.getElementById('err-consent').classList.remove('show');
+  }
+  function validateDrink() {
+    let ok = true;
+    if (!app.drink) { document.getElementById('err-drink').classList.add('show'); ok = false; }
+    if (!document.getElementById('consent-check').checked) {
+      document.getElementById('err-consent').classList.add('show'); ok = false;
+    }
+    if (!ok) return;
+    goTo('s4');
+  }
+
+  /* ── ENTER KEY ── */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const active = document.querySelector('.screen.active');
+    if (active?.id === 's1') validateName();
+    else if (active?.id === 's2') validatePhone();
+  });
+
+  /* ── SHARE ── */
+  function shareZalo(e) {
+    e.preventDefault();
+    const msg = app.lang === 'vi'
+      ? `Scan mã QR trên tấm hoarding ở Thảo Điền và nhận đồ uống miễn phí ngày khai trương của Pin Wei! 🔥 ${window.location.href}`
+      : `Scan the QR on the hoarding in Thao Dien and get a FREE drink on Pin Wei's launch day! 🔥 ${window.location.href}`;
+    // Deep-link to Zalo share; falls back to copy
+    try {
+      window.open('zalo://forward?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(msg), '_blank');
+    } catch(err) {
+      navigator.clipboard?.writeText(window.location.href + '\n' + msg);
+      alert(app.lang === 'vi' ? 'Đã sao chép! Dán vào Zalo nhé.' : 'Copied! Paste into Zalo.');
+    }
+    setTimeout(() => goTo('s-done'), 600);
+  }
+  function shareWhatsApp(e) {
+    e.preventDefault();
+    const msg = app.lang === 'vi'
+      ? `Scan mã QR ở Thảo Điền và nhận đồ uống miễn phí của Pin Wei! 🔥 ${window.location.href}`
+      : `Scan the QR on the hoarding in Thao Dien — get a FREE drink at Pin Wei's launch! 🔥 ${window.location.href}`;
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    setTimeout(() => goTo('s-done'), 600);
+  }
+  function copyLink() {
+    const url = window.location.href;
+    if (navigator.clipboard) navigator.clipboard.writeText(url);
+    else { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+    const label = document.getElementById('copy-label');
+    label.innerHTML = app.lang === 'vi' ? '<span>✓ Đã sao chép!</span>' : '<span>✓ Copied! Send it 👇</span>';
+    setTimeout(() => { label.innerHTML = app.lang === 'vi' ? '<span class="vi-t">Sao chép link</span>' : '<span class="en-t">Copy link</span>'; }, 2500);
+  }
+
+  /* ── CONFETTI ── */
+  function launchConfetti() {
+    const c = document.getElementById('confetti'); c.innerHTML = '';
+    const colors = ['#FFD600','#F5F5F0','#FF6B2C','#0068FF','#00C896'];
+    for (let i = 0; i < 70; i++) {
+      const p = document.createElement('div'); p.className = 'confetti-piece';
+      p.style.left = Math.random()*100 + 'vw';
+      p.style.width = (5 + Math.random()*8) + 'px';
+      p.style.height = (5 + Math.random()*8) + 'px';
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      p.style.animationDuration = (2 + Math.random()*3) + 's';
+      p.style.animationDelay = (Math.random()*2) + 's';
+      p.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      c.appendChild(p);
+    }
+  }
+
+  /* ── SUBMIT ── */
+  // Replace GOOGLE_SCRIPT_URL with your deployed Google Apps Script Web App URL.
+  // See instructions in the README or ask for the Apps Script snippet.
+  function submitData() {
+    const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+    const payload = {
+      name: app.name, phone: app.phone, drink: app.drink,
+      lang: app.lang, source: 'pinwei_hoarding_thaodien',
+      timestamp: new Date().toISOString()
+    };
+    console.log('📋 Pin Wei submission:', payload);
+    // Uncomment when ready:
+    // fetch(GOOGLE_SCRIPT_URL, {
+    //   method: 'POST', mode: 'no-cors',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(payload)
+    // });
+  }
+
+  // Init: default to EN
+  setLang('en');
+</script>
+</body>
+</html>
