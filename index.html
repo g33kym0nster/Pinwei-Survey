@@ -696,11 +696,11 @@
     };
     console.log('📋 Pin Wei submission:', payload);
     // Uncomment when ready:
-    // fetch(GOOGLE_SCRIPT_URL, {
-    //   method: 'POST', mode: 'no-cors',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(payload)
-    // });
+     fetch(GOOGLE_SCRIPT_URL, {
+       method: 'POST', mode: 'no-cors',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify(payload)
+     });
   }
 
   // Init: default to EN
